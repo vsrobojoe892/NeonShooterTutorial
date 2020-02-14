@@ -7,13 +7,18 @@ namespace NeonShooterTutorial
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class GameRoot : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
-        public Game1()
+
+        public static GameRoot Instance;
+        public static Viewport Viewport { get { return Instance.GraphicsDevice.Viewport; } }
+        public static Vector2 ScreenSize { get { return new Vector2(Viewport.Width, Viewport.Height); } }
+
+        public GameRoot()
         {
+            Instance = this;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -29,6 +34,8 @@ namespace NeonShooterTutorial
             // TODO: Add your initialization logic here
 
             base.Initialize();
+
+            EntityManager.Add(PlayerShip.Instance);
         }
 
         /// <summary>
@@ -39,6 +46,8 @@ namespace NeonShooterTutorial
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            Art.Load(Instance);
 
             // TODO: use this.Content to load your game content here
         }
@@ -63,7 +72,7 @@ namespace NeonShooterTutorial
                 Exit();
 
             // TODO: Add your update logic here
-
+            EntityManager.Update();
             base.Update(gameTime);
         }
 
@@ -73,10 +82,12 @@ namespace NeonShooterTutorial
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
-
+            spriteBatch.Begin(SpriteSortMode.Texture, BlendState.Additive);
+            EntityManager.Draw(spriteBatch);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
